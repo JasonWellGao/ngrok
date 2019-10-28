@@ -1,0 +1,10 @@
+[Unit]
+Description=ngrok
+After=network.target
+
+[Service]
+ExecStart=/usr/local/ngrok/bin/ngrokd -domain=$NGROK_DOMAIN -httpAddr=:80 -httpsAddr=:443 -tunnelAddr=:443 %i
+ExecStop=/usr/bin/killall ngrok
+
+[Install]
+WantedBy=multi-user.target

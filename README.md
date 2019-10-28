@@ -66,13 +66,62 @@ GOOS=windows GOARCH=amd64 make release-server
 
 ### 启动服务端
 
+> http  
 ~~~
 # 指定我们刚才设置的域名，指定http, https, tcp端口号，端口号不要跟其他程序冲突
-./bin/ngrokd -domain="$NGROK_DOMAIN" -httpAddr=":80" -httpsAddr=":8082" -tunnelAddr=":443"
+./bin/ngrokd -domain="$NGROK_DOMAIN" -httpAddr=":80" -httpsAddr=":443" -tunnelAddr=":443"
+~~~
+
+> https  
+~~~
+#bin/ngrokd -domain="www.aiesst.com" -httpAddr=":80" -httpsAddr=":443" -tunnelAddr=":443" -tlsKey=./device.key -tlsCrt=./device.crt
 ~~~
 
 > httpAddr,httpsAddr可进行自定义以避免与其他程序产生冲突  
 > tunnelAddr: 默认值为443,可进行自定义以避免与其他程序产生冲突，客户端server_addr的端口号需与此一致  
+
+### ngrok 加入系统服务 开机启动
+
+#### 新建文件 /etc/systemd/system/ngrok.service  
+
+~~~
+[Unit]
+Description=ngrok
+After=network.target
+
+[Service]
+ExecStart=/usr/local/ngrok/bin/ngrokd -domain=$NGROK_DOMAIN -httpAddr=:80 -httpsAddr=:443 -tunnelAddr=:443 %i
+ExecStop=/usr/bin/killall ngrok
+
+[Install]
+WantedBy=multi-user.target
+~~~
+
+#### 重载系统服务
+
+~~~
+systemctl daemon-reload
+~~~
+
+#### 设置开机启动
+
+~~~
+systemctl enable ngrok.service
+~~~
+
+#### 启动服务
+
+~~~
+systemctl start ngrok.service
+~~~
+
+### 停止服务
+
+~~~
+systemctl stop ngrok.service
+~~~
+
+> 在修改ngrok.service后需重载服务并停止ngrok.service，再次启动ngrok.service才可生效  
 
 ### 客户端配置文件
 
