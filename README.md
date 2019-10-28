@@ -1,5 +1,78 @@
+# 搭建ngrok内网穿透服务器
+
+## 系统环境
+> 公网linux服务器,本例采用Centos7  
+
+## 域名
+> 为便于访问,可将自有域名解析到服务器,并对子域名做泛解析  
+
+## 服务端安装
+
+### 1. 安装git,golang和openssl
+
+~~~
+yum install -y git golang openssl
+~~~
+
+如系统中已安装以上软件可不用重复安装,如原安装版本过低可查看可用版本并进行版本升级  
+
+~~~
+yum list YourAppName
+yum update YourAppName
+~~~
+
+### 2.clone ngrok项目到服务器
+
+> ngrok项目在github中有公开仓库,将其clone到服务器/usr/local/ngrok目录  
+
+~~~
+git clone https://github.com/inconshreveable/ngrok.git /usr/local/ngrok
+~~~
+
+### 3.生成证书
+
+~~~
+# 这里替换为自己的独立域名
+export NGROK_DOMAIN="YourDomain"
+
+#进入到ngrok目录生成证书
+cd /usr/local/ngrok
+
+# 下面的命令用于生成证书
+openssl genrsa -out rootCA.key 2048
+openssl req -x509 -new -nodes -key rootCA.key -subj "/CN=$NGROK_DOMAIN" -days 5000 -out rootCA.pem
+openssl genrsa -out device.key 2048
+openssl req -new -key device.key -subj "/CN=$NGROK_DOMAIN" -out device.csr
+openssl x509 -req -in device.csr -CA rootCA.pem -CAkey rootCA.key -CAcreateserial -out device.crt -days 5000
+
+# 将我们生成的证书替换ngrok默认的证书
+cp rootCA.pem assets/client/tls/ngrokroot.crt
+cp device.crt assets/server/tls/snakeoil.crt
+cp device.key assets/server/tls/snakeoil.key
+~~~
+
+### 4. 编译不同平台的服务端和客户端
+
+~~~
+# 编译64位linux平台服务端
+GOOS=linux GOARCH=amd64 make release-server
+# 编译64位windows客户端
+GOOS=windows GOARCH=amd64 make release-server
+# 如果是mac系统，GOOS=darwin。如果是32位，GOARCH=386
+~~~
+
+执行后会在ngrok/bin目录及其子目录下看到服务端ngrokd和客户端ngrok.exe。  
 
 
+### 启动服务端
+
+~~~
+# 指定我们刚才设置的域名，指定http, https, tcp端口号，端口号不要跟其他程序冲突
+./bin/ngrokd -domain="$NGROK_DOMAIN" -httpAddr=":80" -httpsAddr=":8082" -tunnelAddr=":443"
+~~~
+
+> httpAddr,httpsAddr可进行自定义以避免与其他程序产生冲突  
+> tunnelAddr: 默认值为443,可进行自定义以避免与其他程序产生冲突，客户端server_addr的端口号需与此一致  
 
 ### 客户端配置文件
 
