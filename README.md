@@ -63,6 +63,18 @@ GOOS=windows GOARCH=amd64 make release-server
 
 执行后会在ngrok/bin目录及其子目录下看到服务端ngrokd和客户端ngrok.exe。  
 
+不同平台使用不同的 GOOS 和 GOARCH，前面的编译选项就是指 go os , go 编译出来的操作系统 (windows,linux,darwin) ；go arch, 对应的构架 (386,amd64,arm)  
+~~~
+Linux 平台 32 位系统：GOOS=linux GOARCH=386
+Linux 平台 64 位系统：GOOS=linux GOARCH=amd64
+Windows 平台 32 位系统：GOOS=windows GOARCH=386
+Windows 平台 64 位系统：GOOS=windows GOARCH=amd64
+MAC 平台 32 位系统：GOOS=darwin GOARCH=386
+MAC 平台 64 位系统：GOOS=darwin GOARCH=amd64
+ARM 平台：GOOS=linux GOARCH=arm
+~~~
+
+通过前面的步骤，就会在bin目录里面生成所有的客户端文件，客户端平台是文件夹的名字，客户端放在对应的目录下，当前Linux平台客户端在bin目录下。然后我们就可以打个包，把所有文件下载到自己的本机了。  
 
 ### 启动服务端
 
