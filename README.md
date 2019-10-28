@@ -122,3 +122,14 @@ ngrok -config=ngrok.cfg -log=ngrok.log start-all
 
 > 本示例中设置ngrok配置从ngrok.cfg中读取,log写入到ngrok.log中,启动所有tunnels
 
+### 常见问题
+
+> 编译时在下面步骤卡住  
+
+~~~
+go get gopkg.in/yaml.v1
+~~~
+
+这是因为Git版本太低，请将服务器git版本升级到1.7.9.5以上。  
+
+> ngrok首次编译时需要在国外网站下载一些依赖。可能会很慢甚至timeout。多尝试几次，或者以其他科学方式连国外网站。  
