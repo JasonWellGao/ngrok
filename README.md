@@ -57,7 +57,7 @@ cp device.key assets/server/tls/snakeoil.key
 # 编译64位linux平台服务端
 GOOS=linux GOARCH=amd64 make release-server
 # 编译64位windows客户端
-GOOS=windows GOARCH=amd64 make release-server
+GOOS=windows GOARCH=amd64 make release-client
 # 如果是mac系统，GOOS=darwin。如果是32位，GOARCH=386
 ~~~
 
