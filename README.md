@@ -46,9 +46,9 @@ openssl req -new -key device.key -subj "/CN=$NGROK_DOMAIN" -out device.csr
 openssl x509 -req -in device.csr -CA rootCA.pem -CAkey rootCA.key -CAcreateserial -out device.crt -days 5000
 
 # 将我们生成的证书替换ngrok默认的证书
-cp rootCA.pem assets/client/tls/ngrokroot.crt
-cp device.crt assets/server/tls/snakeoil.crt
-cp device.key assets/server/tls/snakeoil.key
+cp rootCA.pem assets/client/tls/ngrokroot.crt -f
+cp device.crt assets/server/tls/snakeoil.crt -f
+cp device.key assets/server/tls/snakeoil.key -f
 ~~~
 
 ### 4. 编译不同平台的服务端和客户端
