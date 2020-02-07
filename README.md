@@ -46,10 +46,12 @@ openssl req -new -key device.key -subj "/CN=$NGROK_DOMAIN" -out device.csr
 openssl x509 -req -in device.csr -CA rootCA.pem -CAkey rootCA.key -CAcreateserial -out device.crt -days 5000
 
 # 将我们生成的证书替换ngrok默认的证书
-cp rootCA.pem assets/client/tls/ngrokroot.crt
-cp device.crt assets/server/tls/snakeoil.crt
-cp device.key assets/server/tls/snakeoil.key
+\cp rootCA.pem assets/client/tls/ngrokroot.crt -f
+\cp device.crt assets/server/tls/snakeoil.crt -f
+\cp device.key assets/server/tls/snakeoil.key -f
 ~~~
+
+这里用的 ` \cp ` 命令，因为系统默认 cp 是有别名的，实际执行的是 cp -i，需要每一个覆盖的时候都确认一遍，加上 \cp 就可强制覆盖了。到这个地方，证书生成已经复制的准备工作就已经完成了。  
 
 ### 4. 编译不同平台的服务端和客户端
 
@@ -78,19 +80,24 @@ ARM 平台：GOOS=linux GOARCH=arm
 
 ### 启动服务端
 
+~~~
+cd /root/ngrok
+NGROK_DOMAIN="www.aiesst.com"
+~~~
+
 > http  
 ~~~
 # 指定我们刚才设置的域名，指定http, https, tcp端口号，端口号不要跟其他程序冲突
-./bin/ngrokd -domain="$NGROK_DOMAIN" -httpAddr=":80" -httpsAddr=":443" -tunnelAddr=":443"
+./bin/ngrokd -domain="$NGROK_DOMAIN" -httpAddr=":80" -httpsAddr=":443" -tunnelAddr=":4443"
 ~~~
 
 > https  
 ~~~
-#bin/ngrokd -domain="www.aiesst.com" -httpAddr=":80" -httpsAddr=":443" -tunnelAddr=":443" -tlsKey=./device.key -tlsCrt=./device.crt
+#bin/ngrokd -domain="www.aiesst.com" -httpAddr=":80" -httpsAddr=":443" -tunnelAddr=":4443" -tlsKey=./device.key -tlsCrt=./device.crt
 ~~~
 
 > httpAddr,httpsAddr可进行自定义以避免与其他程序产生冲突  
-> tunnelAddr: 默认值为443,可进行自定义以避免与其他程序产生冲突，客户端server_addr的端口号需与此一致  
+> tunnelAddr: 默认值为4443,可进行自定义以避免与其他程序产生冲突，客户端server_addr的端口号需与此一致  
 
 ### ngrok 加入系统服务 开机启动
 
@@ -102,7 +109,7 @@ Description=ngrok
 After=network.target
 
 [Service]
-ExecStart=/usr/local/ngrok/bin/ngrokd -domain=$NGROK_DOMAIN -httpAddr=:80 -httpsAddr=:443 -tunnelAddr=:443 %i
+ExecStart=/usr/local/ngrok/bin/ngrokd -domain=$NGROK_DOMAIN -httpAddr=:80 -httpsAddr=:443 -tunnelAddr=:4443 %i
 ExecStop=/usr/bin/killall ngrok
 
 [Install]
@@ -143,7 +150,7 @@ systemctl stop ngrok.service
 #### 客户端示例配置
 
 ~~~
-server_addr: "YourDomain:443"
+server_addr: "YourDomain:4443"
 trust_host_root_certs: false
 tunnels:
     http:
