@@ -81,8 +81,8 @@ ARM 平台：GOOS=linux GOARCH=arm
 ### 启动服务端
 
 ~~~
-cd /root/ngrok
-NGROK_DOMAIN="www.aiesst.com"
+cd /usr/local/ngrok
+export NGROK_DOMAIN="YourDomain"
 ~~~
 
 > http  
