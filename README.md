@@ -201,3 +201,41 @@ go get gopkg.in/yaml.v1
 这是因为Git版本太低，请将服务器git版本升级到1.7.9.5以上。  
 
 > ngrok首次编译时需要在国外网站下载一些依赖。可能会很慢甚至timeout。多尝试几次，或者以其他科学方式连国外网站。  
+
+> 防火墙可能会影响ngrok的访问，如连接失败请检查防火墙状态及设置
+
+~~~
+# 查看firewall服务状态
+systemctl status firewalld
+
+# 查看firewall的状态
+firewall-cmd --state
+
+# 开启停止防火墙
+# 开机启动：
+systemctl enable firewalld.service
+
+# 启动：
+systemctl start firewalld.service
+
+# 停止：
+systemctl stop firewalld.service
+# 禁止开机启动：
+systemctl disable firewalld.service
+
+# 开放端口
+firewall-cmd --zone=public --add-port=80/tcp --permanent
+# –zone #作用域
+# –add-port=80/tcp #添加端口，格式为：端口号/协议
+# –permanent #永久生效，没有此参数重启后失效
+
+#禁用端口
+firewall-cmd --zone=public --remove-port=80/tcp --permanent
+
+# 应用修改(修改配置后要重启防火墙)
+firewall-cmd --reload
+
+# 查看所有开放的端口
+firewall-cmd --zone=dmz --list-ports
+firewall-cmd --list-ports
+~~~
