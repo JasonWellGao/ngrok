@@ -89,11 +89,15 @@ export NGROK_DOMAIN="YourDomain"
 ~~~
 # 指定我们刚才设置的域名，指定http, https, tcp端口号，端口号不要跟其他程序冲突
 ./bin/ngrokd -domain="$NGROK_DOMAIN" -httpAddr=":80" -httpsAddr=":443" -tunnelAddr=":4443"
+# 或
+./bin/ngrokd -domain="YourDomain" -httpAddr=":80" -httpsAddr=":443" -tunnelAddr=":4443"
 ~~~
 
 > https  
 ~~~
-#bin/ngrokd -domain="www.aiesst.com" -httpAddr=":80" -httpsAddr=":443" -tunnelAddr=":4443" -tlsKey=./device.key -tlsCrt=./device.crt
+bin/ngrokd -domain="$NGROK_DOMAIN" -httpAddr=":80" -httpsAddr=":443" -tunnelAddr=":4443" -tlsKey=./device.key -tlsCrt=./device.crt
+# 或
+bin/ngrokd -domain="YourDomain" -httpAddr=":80" -httpsAddr=":443" -tunnelAddr=":4443" -tlsKey=./device.key -tlsCrt=./device.crt
 ~~~
 
 > httpAddr,httpsAddr可进行自定义以避免与其他程序产生冲突  
@@ -103,13 +107,30 @@ export NGROK_DOMAIN="YourDomain"
 
 #### 新建文件 /etc/systemd/system/ngrok.service  
 
+> http  
+
 ~~~
 [Unit]
 Description=ngrok
 After=network.target
 
 [Service]
-ExecStart=/usr/local/ngrok/bin/ngrokd -domain=$NGROK_DOMAIN -httpAddr=:80 -httpsAddr=:443 -tunnelAddr=:4443 %i
+ExecStart=/usr/local/ngrok/bin/ngrokd -domain=YourDomain -httpAddr=:80 -httpsAddr=:443 -tunnelAddr=:4443 %i
+ExecStop=/usr/bin/killall ngrok
+
+[Install]
+WantedBy=multi-user.target
+~~~
+
+> https  
+
+~~~
+[Unit]
+Description=ngrok
+After=network.target
+
+[Service]
+ExecStart=/usr/local/ngrok/bin/ngrokd -domain=YourDomain -httpAddr=:80 -httpsAddr=:443 -tunnelAddr=:4443 -tlsKey=/usr/local/ngrok/device.key -tlsCrt=/usr/local/ngrok/device.crt %i
 ExecStop=/usr/bin/killall ngrok
 
 [Install]
