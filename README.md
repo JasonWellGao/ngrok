@@ -201,6 +201,18 @@ tunnels:
 
 #### 启动文件示例
 
+
+~~~
+@echo on
+cd %cd%
+#ngrok -proto=tcp 22
+#ngrok start web
+ngrok -config=ngrok.cfg -log=ngrok.log start-all
+~~~
+
+> 本示例中设置ngrok配置从ngrok.cfg中读取,log写入到ngrok.log中,启动所有tunnels
+
+
 ### linux 客户端
 
 #### 新建文件 /etc/systemd/system/ngrok.service  
@@ -221,18 +233,6 @@ WantedBy=multi-user.target
 #### 设置启动方式
 
 > 参照服务端设置启动方式进行设置  
-
-~~~
-@echo on
-cd %cd%
-#ngrok -proto=tcp 22
-#ngrok start web
-ngrok -config=ngrok.cfg -log=ngrok.log start-all
-~~~
-
-> 本示例中设置ngrok配置从ngrok.cfg中读取,log写入到ngrok.log中,启动所有tunnels
-
-
 
 ### 常见问题
 
