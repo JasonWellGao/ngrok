@@ -21,6 +21,20 @@ yum list YourAppName
 yum update YourAppName
 ~~~
 
+如果在docker容器中，安装golang可能报错：
+
+~~~
+No package golang available.
+~~~
+
+此时应先安装epel
+
+~~~
+yum install epel-release
+~~~
+
+然后再安装golang
+
 ### 2.clone ngrok项目到服务器
 
 > ngrok项目在github中有公开仓库,将其clone到服务器/usr/local/ngrok目录  
